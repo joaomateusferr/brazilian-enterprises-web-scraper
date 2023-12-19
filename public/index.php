@@ -223,10 +223,30 @@
     if(empty($_POST)){
 
         ?>
-            <form id="FormSearch" action="<?php echo $_SERVER['PHP_SELF'];?>" method="post">
-                <input type="hidden" name="Run" id="Run" value="1">
-                <button type="submit"> Search </button>
-            </form>
+
+            <div id="DivSearch">
+
+                <form id="FormSearch" action="<?php echo $_SERVER['PHP_SELF'];?>" onsubmit="showLoaring()" method="post">
+                    <input type="hidden" name="Run" id="Run" value="1">
+                    <button type="submit"> Search </button>
+                </form>
+
+            </div>
+
+            <div id="DivProcessing" style="display:none;">
+                <p>The search is being processed, this may take a while, don't close the browser and your csv will soon be downloaded</p>
+            </div>
+
+            <script>
+
+                function showLoaring(){
+
+                    document.getElementById("DivSearch").style.display = "none";
+                    document.getElementById("DivProcessing").style.display = "flex";
+
+                }
+
+            </script>
 
         <?php
 
@@ -255,12 +275,12 @@
             }
 
             $ApiPage++;
-            sleep(rand(1, 3));
+            //sleep(rand(1, 3));
 
             if($ApiPage > $ApiResponse['page']['current'] + 1)
                 break;
 
-            //break;  //debug only
+            break;  //debug only
 
         }
 
@@ -278,7 +298,7 @@
             if(isset($PageInfo['Telefone']))
                 $Empresas[$Cnpj]['telefone'] = $PageInfo['Telefone'];
 
-            sleep(rand(1, 3));
+            //sleep(rand(1, 3));
 
         }
 
