@@ -275,12 +275,12 @@
             }
 
             $ApiPage++;
-            //sleep(rand(1, 3));
+            sleep(rand(1, 3));
 
             if($ApiPage > $ApiResponse['page']['current'] + 1)
                 break;
 
-            break;  //debug only
+            //break;  //debug only
 
         }
 
@@ -298,7 +298,7 @@
             if(isset($PageInfo['Telefone']))
                 $Empresas[$Cnpj]['telefone'] = $PageInfo['Telefone'];
 
-            //sleep(rand(1, 3));
+            sleep(rand(1, 3));
 
         }
 
