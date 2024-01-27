@@ -171,7 +171,7 @@
         exec($Command, $Output, $ResultCode);
 
         if($ResultCode != 0 || empty($Output))
-            exit('Something went wrong!');
+            exit("Something went wrong!\n".var_export($Output,true));
 
         $CsvPath = $Output[0];
 

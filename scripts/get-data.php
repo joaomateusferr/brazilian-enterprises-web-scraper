@@ -10,7 +10,7 @@
 	unset($ProjectPath[array_key_last($ProjectPath)]);
 	$ProjectPath = implode("/", $ProjectPath);
 
-    $GLOBALS['CookiePath'] = $HtmlPath.'/../brazilian-enterprise-details-web-scraper-cookie-content.txt';
+    $GLOBALS['CookiePath'] = $ProjectPath.'/../brazilian-enterprise-details-web-scraper-cookie-content.txt';
     $GLOBALS['UserAgent'] = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0';
 
     $ApiSearchUrl = 'https://api.casadosdados.com.br/v2/public/cnpj/search';
@@ -65,6 +65,20 @@
         }
 
         return json_decode($Response, true);
+
+    }
+
+    function validateCookie (string $CookieFilePath) : bool {
+
+        if(!file_exists($CookieFilePath))
+            return false;
+
+        $Cookie = file_get_contents($CookieFilePath);
+
+        if(empty($Cookie))
+            return false;
+
+        return true;
 
     }
 
@@ -185,7 +199,7 @@
 
         }
 
-        $Filename = 'brazilian-enterprise-details-web-scraper-'.uniqid().'.csv';
+        $Filename = 'brazilian-enterprise-details-web-scraper-'.uniqid().'-'.time().'.csv';
 
         $CsvPath = '/tmp/'.$Filename;
 
@@ -211,6 +225,13 @@
         $Query = json_decode($QueryFile, true);
         return $Query;
 
+    }
+
+    $IsCookieValid = validateCookie($GLOBALS['CookiePath']);
+
+    if(!$IsCookieValid){
+        echo "Invalid cookie!";
+        exit(1);
     }
 
     $ApiQuery = getQuery($QueryFilePath);
