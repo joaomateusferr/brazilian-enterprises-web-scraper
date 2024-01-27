@@ -6,7 +6,11 @@
     $DebugMode = isset($argv[2]) ? $argv[2] : false;
     $UseSleep = $DebugMode ? false : true;
 
-    $GLOBALS['CookiePath'] = dirname(__FILE__).'/../cookie/content.txt';
+    $ProjectPath = explode("/", dirname(__FILE__));
+	unset($ProjectPath[array_key_last($ProjectPath)]);
+	$ProjectPath = implode("/", $ProjectPath);
+
+    $GLOBALS['CookiePath'] = $HtmlPath.'/../brazilian-enterprise-details-web-scraper-cookie-content.txt';
     $GLOBALS['UserAgent'] = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0';
 
     $ApiSearchUrl = 'https://api.casadosdados.com.br/v2/public/cnpj/search';
