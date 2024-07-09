@@ -16,6 +16,12 @@
     $ApiSearchUrl = 'https://api.casadosdados.com.br/v2/public/cnpj/search';
     $SitepageUrl = 'https://casadosdados.com.br/solucao/cnpj/';
 
+    $FieldTranslator = [
+        'Sócios' => 'quadro_societario',
+        'Email' => 'email',
+        'Telefone' => 'telefone'
+    ];
+
     function apiRequest (string $Url, array $Query, int $Page = 0) : array {
 
         if(!empty($Page))
@@ -135,30 +141,37 @@
         @$Document->loadHTML($Page);
         $XPath = new DOMXPath($Document);
 
-        $MainDiv = $XPath->query("//div[contains(@class, 'column is-9')]");
+        $MainDiv = $XPath->query("//div[contains(@class, 'column is-7 is-offset-2')]");
 
         $PageInfos = [];
 
         foreach ($MainDiv as $MainDivContent) {
 
-            $Div = $XPath->query(".//div[contains(@class, 'column is-narrow')]", $MainDivContent);
+            $Div = $XPath->query(".//div[contains(@class, 'p-3')]", $MainDivContent);
 
             foreach ($Div as $DivContent) {
 
-            $Key = $XPath->query(".//p[@class='has-text-weight-bold']", $DivContent);
-            $Value = $XPath->query(".//p[not(@class='has-text-weight-bold')]", $DivContent);
+                $Key = $XPath->query(".//label", $DivContent);
+                $Value = $XPath->query(".//p[@class='has-text-weight-bold']", $DivContent);
 
-            if ($Key->length > 0 && $Value->length > 0) {
+                if ($Key->length > 0 && $Value->length > 0) {
 
-                $PageInfos[$Key[0]->nodeValue] = [];
+                    $Tokens = explode(':', $Key[0]->nodeValue);
 
-                foreach($Value as $Info){
+                    if(!isset($Tokens[1]))
+                        continue;
 
-                $PageInfos[$Key[0]->nodeValue][] = $Info->nodeValue;
+                    $KeyString = trim($Tokens[0]);
+
+                    $PageInfos[$KeyString] = [];
+
+                    foreach($Value as $Info){
+
+                        $PageInfos[$KeyString][] = $Info->nodeValue;
+
+                    }
 
                 }
-
-            }
 
             }
 
@@ -184,12 +197,31 @@
 
                 } else {
 
-                    if(empty($Info[$Colun]))
+                    if(empty($Info[$Colun])){
+
                         $Details[$ColunKey] = '';
-                    elseif(is_array($Info[$Colun]))
-                        $Details[$ColunKey] = implode(', ', $Info[$Colun]);
-                    else
+
+                    }elseif(is_array($Info[$Colun])){
+
+                        if(count($Info[$Colun]) == 1){
+
+                            if($Info[$Colun][0] == '-')
+                                $Details[$ColunKey] = '';
+                            else
+                                $Details[$ColunKey] = $Info[$Colun][0];
+
+                        } else{
+
+                            $Details[$ColunKey] = implode(', ', $Info[$Colun]);
+
+                        }
+
+
+                    } else{
+
                         $Details[$ColunKey] = $Info[$Colun];
+
+                    }
 
                 }
 
@@ -288,14 +320,12 @@
 
         $PageInfo = parsePage($Page);
 
-        if(isset($PageInfo['Quadro Societário']))
-            $Empresas[$Cnpj]['quadro_societario'] = $PageInfo['Quadro Societário'];
+        foreach($FieldTranslator as $Site => $Colun){
 
-        if(isset($PageInfo['E-MAIL']))
-            $Empresas[$Cnpj]['email'] = $PageInfo['E-MAIL'];
+            if(isset($PageInfo[$Site]))
+                $Empresas[$Cnpj][$Colun] = $PageInfo[$Site];
 
-        if(isset($PageInfo['Telefone']))
-            $Empresas[$Cnpj]['telefone'] = $PageInfo['Telefone'];
+        }
 
         if($UseSleep)
             sleep(rand(1, 3));
@@ -305,7 +335,15 @@
 
     }
 
-    $CsvColuns = ['cnpj', 'quadro_societario', 'email', 'telefone', 'url'];
+    $CsvColuns = ['cnpj'];
+
+    foreach($FieldTranslator as $Colun){
+
+        $CsvColuns[] = $Colun;
+
+    }
+
+    $CsvColuns[] = 'url';
 
     $CsvPath = createCsv($CsvColuns, $Empresas);
 
