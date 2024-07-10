@@ -17,9 +17,21 @@
     $SitepageUrl = 'https://casadosdados.com.br/solucao/cnpj/';
 
     $FieldTranslator = [
-        'Sócios' => 'quadro_societario',
+        'Razão Social' => 'razão_social',
+        'Nome Fantasia' => 'nome_fantasia',
+        'CNAE Principal' => 'cnae_principal',
+        'CNAEs Secundários' => 'cnaes_secundários',
+        'Natureza Jurídica' => 'natureza_jurídica',
+        'Logradouro' => 'logradouro',
+        'Número' => 'numero',
+        'Complemento' => 'complemento',
+        'Bairro' => 'bairro',
+        'CEP' => 'cep',
+        'Municipio' => 'municipio',
+        'Estado' => 'estado',
         'Email' => 'email',
-        'Telefone' => 'telefone'
+        'Telefone' => 'telefone',
+        //'Sócios' => 'quadro_societario',
     ];
 
     function apiRequest (string $Url, array $Query, int $Page = 0) : array {
