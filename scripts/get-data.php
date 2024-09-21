@@ -166,6 +166,12 @@
                 $Key = $XPath->query(".//label", $DivContent);
                 $Value = $XPath->query(".//p[@class='has-text-weight-bold']", $DivContent);
 
+                if($Key->length > 0 && $Value->length == 0){
+
+                    $Value = $XPath->query(".//a", $DivContent); //phone data is different from other fields
+
+                }
+
                 if ($Key->length > 0 && $Value->length > 0) {
 
                     $Tokens = explode(':', $Key[0]->nodeValue);
