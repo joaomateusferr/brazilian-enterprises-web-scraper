@@ -10,6 +10,7 @@
 	unset($ProjectPath[array_key_last($ProjectPath)]);
 	$ProjectPath = implode("/", $ProjectPath);
 
+    $GLOBALS['DebugMode'] = $DebugMode;
     $GLOBALS['CookiePath'] = $ProjectPath.'/../brazilian-enterprise-details-web-scraper-cookie-content.txt';
     $GLOBALS['UserAgent'] = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0';
 
@@ -123,8 +124,12 @@
 
         if($Response === false){
             curl_close($Curl);
-            echo 'Site curl error: '.curl_error($Curl)."\n";
-            echo $Url."\n";
+
+            if($GLOBALS['DebugMode']){
+                echo 'Site curl error: '.curl_error($Curl)."\n";
+                echo $Url."\n";
+            }
+
             return '';
         }
 
@@ -133,14 +138,22 @@
         curl_close($Curl);
 
         if(empty($HttpCode)){
-            echo "Site empty http code!\n";
-            echo $Url."\n";
+
+            if($GLOBALS['DebugMode']){
+                echo "Site empty http code!\n";
+                echo $Url."\n";
+            }
+
             return '';
         }
 
         if($HttpCode != 200){
-            echo "Site http code error $HttpCode\n";
-            echo $Url."\n";
+
+            if($GLOBALS['DebugMode']){
+                echo "Site http code error $HttpCode\n";
+                echo $Url."\n";
+            }
+
             return '';
         }
 
